@@ -14,5 +14,8 @@ data class Usuario(
     @Column(nullable = false)
     var password: String? = null,
 
-    var roles: String? = null
+    var roles: String? = null,
+
+//    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY,mappedBy = "usuario")
+//    val historiales: List<Historial>? = null
 )
