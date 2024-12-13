@@ -15,6 +15,6 @@ data class Alimento(
     var labels: String,
     @Column
     var imageUrl: String? = null,
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY,mappedBy = "alimento")
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY,mappedBy = "alimento", orphanRemoval = false)
     val historiales: List<Historial>? = null
 )

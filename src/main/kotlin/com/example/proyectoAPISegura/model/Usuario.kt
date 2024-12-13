@@ -16,6 +16,6 @@ data class Usuario(
 
     var roles: String? = null,
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY,mappedBy = "usuario")
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY,mappedBy = "usuario", orphanRemoval = false)
     val historiales: List<Historial>? = null
 )

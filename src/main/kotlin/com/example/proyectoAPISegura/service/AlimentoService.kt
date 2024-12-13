@@ -2,19 +2,36 @@ package com.example.proyectoAPISegura.service
 
 import com.example.proyectoAPISegura.error.exception.BadRequestException
 import com.example.proyectoAPISegura.model.Alimento
+import com.example.proyectoAPISegura.model.Historial
 import com.example.proyectoAPISegura.repository.AlimentoRepository
+import com.example.proyectoAPISegura.repository.HistorialRepository
+import com.example.proyectoAPISegura.repository.UsuarioRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
 class AlimentoService {
     @Autowired
+    private lateinit var usuarioRepository: UsuarioRepository
+
+    @Autowired
+    private lateinit var historialRepository: HistorialRepository
+
+    @Autowired
     private lateinit var alimentoRepository: AlimentoRepository
 
-    fun findByCode(code:Long): Optional<Alimento> {
+    fun findByCode(code:Long, authentication: Authentication): Optional<Alimento> {
+
+        val usuarioBd = usuarioRepository.findByUsername(authentication.name)
 
         val alimento = alimentoRepository.findById(code)
+
+        if (!usuarioBd.isEmpty && !alimento.isEmpty) {
+            val historial = Historial(null, usuarioBd.get(), alimento.get())
+            historialRepository.save(historial)
+        }
 
         return alimento
     }

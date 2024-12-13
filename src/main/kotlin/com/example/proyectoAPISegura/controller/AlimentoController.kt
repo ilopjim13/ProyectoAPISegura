@@ -31,9 +31,9 @@ class AlimentoController {
 
         val codeOk = code.toLongOrNull() ?: throw BadRequestException("El codigo debe ser un número")
 
-        val alimento = alimentoService.findByCode(codeOk)
+        val alimento = alimentoService.findByCode(codeOk, authentication)
 
-        return ResponseEntity(alimento.get(), HttpStatus.CREATED)
+        return ResponseEntity(alimento.get(), HttpStatus.OK)
 
     }
 
@@ -45,7 +45,7 @@ class AlimentoController {
 
         val alimentoAct = alimentoService.insertAlimento(alimento)
 
-        return ResponseEntity(alimentoAct.get(), HttpStatus.OK)
+        return ResponseEntity(alimentoAct.get(), HttpStatus.CREATED)
     }
 
 
