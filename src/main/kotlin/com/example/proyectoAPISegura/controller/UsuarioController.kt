@@ -29,6 +29,16 @@ class UsuarioController {
     @Autowired
     private lateinit var tokenService: TokenService
 
+    @PostMapping("/register")
+    fun register(
+        @RequestBody newUsuario: Usuario
+    ) : ResponseEntity<Any?>? {
+        val usuarioCreado = usuarioService.insertUsuario(newUsuario)
+
+        return ResponseEntity(usuarioCreado, HttpStatus.CREATED)
+    }
+
+
     @PostMapping("/login")
     fun login(@RequestBody usuario: Usuario): ResponseEntity<Any>? {
 
