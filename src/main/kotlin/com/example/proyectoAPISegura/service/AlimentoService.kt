@@ -29,7 +29,7 @@ class AlimentoService {
         val alimento = alimentoRepository.findById(code)
 
         if (!usuarioBd.isEmpty && !alimento.isEmpty) {
-            val historial = Historial(null, usuarioBd.get(), alimento.get())
+            val historial = Historial(null, usuarioBd.get(), alimento.get(), Date())
             historialRepository.save(historial)
         }
 

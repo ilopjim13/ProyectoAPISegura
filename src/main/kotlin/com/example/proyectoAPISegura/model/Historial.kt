@@ -1,5 +1,6 @@
 package com.example.proyectoAPISegura.model
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 import java.util.Date
 
@@ -11,10 +12,12 @@ data class Historial(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario")
+    @JsonBackReference
     var usuario: Usuario? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "alimento_id")
+    @JsonBackReference
     var alimento: Alimento? = null,
 
     @Column
