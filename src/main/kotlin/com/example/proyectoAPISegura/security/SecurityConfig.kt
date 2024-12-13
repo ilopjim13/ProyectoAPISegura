@@ -38,6 +38,7 @@ class SecurityConfig {
             .authorizeHttpRequests { auth -> auth
                 .requestMatchers("/usuarios/login").permitAll()
                 .requestMatchers("/usuarios/register").permitAll()
+                .requestMatchers("/usuarios/delete").authenticated()
                 .requestMatchers("/alimentos/**").authenticated()
                 //.requestMatchers("").permitAll()
                 //.requestMatchers(HttpMethod.DELETE,"").hasRole("ADMIN")

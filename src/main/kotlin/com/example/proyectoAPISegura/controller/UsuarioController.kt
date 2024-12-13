@@ -10,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -56,5 +58,19 @@ class UsuarioController {
         return ResponseEntity(mapOf("token" to token), HttpStatus.CREATED)
 
     }
+
+    @DeleteMapping("/delete/{nombre}")
+    fun delete(
+        @PathVariable nombre:String,
+        authentication: Authentication
+    ) : ResponseEntity<Any>? {
+
+        usuarioService.delete(nombre, authentication)
+
+        return ResponseEntity("Usuario eliminado", HttpStatus.OK)
+
+    }
+
+
 
 }

@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UsuarioService: UserDetailsService {
@@ -47,6 +48,17 @@ class UsuarioService: UserDetailsService {
 
         return newUsuario
     }
+
+    @Transactional
+    fun delete(nombre: String, authentication: Authentication) {
+
+        if(!checkUserOrAdmin(authentication, nombre)) {
+            throw BadRequestException("No tienes permisos para eliminar este usuario")
+        }
+
+        usuarioRepository.deleteByUsername(nombre)
+    }
+
 
     fun checkUserOrAdmin(authentication: Authentication, nombre:String):Boolean {
         authentication.authorities.forEach {
