@@ -1,6 +1,7 @@
 package com.example.proyectoAPISegura.service
 
 import com.example.proyectoAPISegura.error.exception.BadRequestException
+import com.example.proyectoAPISegura.model.Historial
 import com.example.proyectoAPISegura.model.Usuario
 import com.example.proyectoAPISegura.repository.UsuarioRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -57,6 +58,26 @@ class UsuarioService: UserDetailsService {
         }
 
         usuarioRepository.deleteByUsername(nombre)
+    }
+
+    fun getHistoriales(nombre: String, authentication: Authentication):List<Historial> {
+
+        val usuarioBd = usuarioRepository.findByUsername(nombre)
+
+        if (usuarioBd.isEmpty) {
+            throw BadRequestException("Este usuario no existe")
+        }
+
+        if(!checkUserOrAdmin(authentication, nombre)) {
+            throw BadRequestException("No tienes permisos para ver los historiales de este usuario")
+        }
+
+        return if (usuarioBd.get().historiales == null) {
+            emptyList()
+        } else {
+            usuarioBd.get().historiales!!
+        }
+
     }
 
 

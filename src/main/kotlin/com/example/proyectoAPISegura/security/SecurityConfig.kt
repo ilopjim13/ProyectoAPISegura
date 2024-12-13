@@ -25,6 +25,7 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
+
 class SecurityConfig {
 
     @Autowired
@@ -39,8 +40,8 @@ class SecurityConfig {
                 .requestMatchers("/usuarios/login").permitAll()
                 .requestMatchers("/usuarios/register").permitAll()
                 .requestMatchers("/usuarios/delete").authenticated()
+                .requestMatchers("/usuarios//historiales").authenticated()
                 .requestMatchers("/alimentos/**").authenticated()
-                //.requestMatchers("").permitAll()
                 //.requestMatchers(HttpMethod.DELETE,"").hasRole("ADMIN")
                 .anyRequest().permitAll()
             }

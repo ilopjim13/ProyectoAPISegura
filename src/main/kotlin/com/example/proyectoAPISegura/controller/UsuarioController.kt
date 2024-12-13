@@ -1,5 +1,6 @@
 package com.example.proyectoAPISegura.controller
 
+import com.example.proyectoAPISegura.model.Historial
 import com.example.proyectoAPISegura.model.Usuario
 import com.example.proyectoAPISegura.service.TokenService
 import com.example.proyectoAPISegura.service.UsuarioService
@@ -11,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -71,6 +73,18 @@ class UsuarioController {
 
     }
 
+
+    @GetMapping("/historiales/{nombre}")
+    fun getHistoriales(
+        @PathVariable nombre:String,
+        authentication: Authentication
+    ) : ResponseEntity<Any>? {
+
+        val historiales = usuarioService.getHistoriales(nombre, authentication)
+
+        return ResponseEntity(historiales, HttpStatus.OK)
+
+    }
 
 
 }
