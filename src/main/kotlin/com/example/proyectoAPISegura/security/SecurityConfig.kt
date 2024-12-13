@@ -38,9 +38,10 @@ class SecurityConfig {
             .authorizeHttpRequests { auth -> auth
                 .requestMatchers("/usuarios/login").permitAll()
                 .requestMatchers("/usuarios/register").permitAll()
+                .requestMatchers("/alimentos/*").authenticated()
                 //.requestMatchers("").permitAll()
                 //.requestMatchers(HttpMethod.DELETE,"").hasRole("ADMIN")
-                //.anyRequest().authenticated()
+                .anyRequest().permitAll()
             }
             .oauth2ResourceServer {oauth2 -> oauth2.jwt(Customizer.withDefaults())}
             .sessionManagement { session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)}

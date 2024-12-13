@@ -8,13 +8,13 @@ data class Alimento(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val code: Long? = null,
     @Column(nullable = false)
-    val name: String,
+    var name: String,
     @Column(nullable = false)
-    val marca: String? = null,
+    var marca: String,
     @Column(nullable = false)
-    val labels: String?,
-    @Column(nullable = false)
-    val imageUrl: String,
+    var labels: String,
+    @Column
+    var imageUrl: String? = null,
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY,mappedBy = "alimento")
     val historiales: List<Historial>? = null
 )
