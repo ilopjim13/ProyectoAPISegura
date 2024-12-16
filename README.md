@@ -1,7 +1,7 @@
 # PROYECTO API REST SEGURA
 ## Aplicación de información de alimentos
 
-Para este proyecto he decido crear una aplicación para gestionar la información de alimentos, en la cual a través del
+Para este proyecto he decidido crear una aplicación para gestionar la información de alimentos, en la cual a través del
 código de barras del producto se sacará la información del producto, también se podrán agregar o eliminar productos y editarlos.
 Por ejemplo se podrán modificar las etiquetas de un producto para ponerle si es sin gluten, sin lactosa, etc.
 
@@ -14,32 +14,43 @@ Para ello he de crear varias tablas, entre ellas:
 
 
 ```roomsql
-    CREATE TABLE alimento (
-      code INTEGER PRIMARY KEY,
-      name VARCHAR(255),
-      marca VARCHAR(255),
-      labels VARCHAR(255),
-      image_url VARCHAR(255)
+    CREATE TABLE alimentos (
+    code BIGINT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    marca VARCHAR(255) NOT NULL,
+    labels VARCHAR(255) NOT NULL,
+    image_url VARCHAR(255),
+    busqueda INT NOT NULL DEFAULT 0
     );
 ```
 
 ```roomsql
-    CREATE TABLE usuario (
-      id INTEGER PRIMARY KEY,
-      username VARCHAR(255),
-      password VARCHAR(255),
-      role VARCHAR(255)
+    CREATE TABLE usuarios (
+    id BIGINT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    roles VARCHAR(255)
     );
 ```
 
 ```roomsql
     CREATE TABLE historial (
-      id INTEGER PRIMARY KEY,
-      usuario_id INTEGER,
-      alimento_id INTEGER,
-      fecha TIMESTAMP,
-      FOREIGN KEY (usuario_id) REFERENCES usuario(id),
-      FOREIGN KEY (alimento_id) REFERENCES alimento(code)
+    id BIGINT PRIMARY KEY,
+    id_usuario BIGINT,
+    alimento_id BIGINT,
+    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_historial_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_historial_alimento FOREIGN KEY (alimento_id) REFERENCES alimentos(code) ON DELETE CASCADE
+    );
+```
+
+```roomsql
+    CREATE TABLE usuario_favoritos (
+    usuario_id BIGINT NOT NULL,
+    alimento_id BIGINT NOT NULL,
+    CONSTRAINT pk_usuario_favoritos PRIMARY KEY (usuario_id, alimento_id),
+    CONSTRAINT fk_usuario_favoritos_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_usuario_favoritos_alimento FOREIGN KEY (alimento_id) REFERENCES alimentos(code) ON DELETE CASCADE
     );
 ```
 
@@ -52,7 +63,7 @@ Para este proyecto voy a desarrollar varios endpoints por cada tabla:
  
 ### AlimentoController ("/alimentos")
 
-- GetMapping -> "/informacion/{code}" : En este endpoint el usuario indicará por la path el codigo de un alimento y este
+- GetMapping -> "/informacion/{code}" : En este endpoint el usuario indicará por la path el código de un alimento y este
 le devolverá la información del alimento.
   - Si el código que introduce el usuario no es un número dará un error 400
   - En caso de no haber ningún alimento con ese código saltará el error 404 indicando el error.
@@ -62,19 +73,19 @@ le devolverá la información del alimento.
 - GetMapping -> "/top" : Este endpoint se va a encargar de mostrar los alimentos mas buscados en orden para saber que producto
 está de moda.
     - Si no se ha buscado ningún alimento este saltará un error 400 indicando el error.
-    - El caso contrario mostrará una lista con los top 5 alimentos mas buscados en la aplicación.
+    - En caso contrario mostrará una lista con los top 5 alimentos más buscados en la aplicación.
 
 
-- PostMapping -> "/insert" : Desde aqui cualquier usuario autorizado puede agregar un alimento que no exista en la base 
+- PostMapping -> "/insert" : Desde aquí cualquier usuario autorizado puede agregar un alimento que no exista en la base 
 de datos, comprobando que los alimentos no tengan campos vacíos o incorrectos.
-  - Si el alimento que se intenta insertar tiene campos importantes vaciós saltará una excepción con el código 400.
-  - Si todo está correcto entoces se insertará el producto y mostrará un código 200.
+  - Si el alimento que se intenta insertar tiene campos importantes vacíos saltará una excepción con el código 400.
+  - Si todo está correcto entonces se insertará el producto y mostrará un código 200.
 
 
 - PostMapping -> "/actualizar" : Los usuarios autorizados podrán actualizar los alimentos que ya existan en la base de datos
 comprobando nuevamente que los campos sean correctos.
   - Si el código que introduce el usuario no es un número dará un error 400
-  - Si los campos importante están vacíos saltará un 400.
+  - Si los campos importantes están vacíos saltará un 400.
   - Si todo está correcto se actualizará y mostrará un 201
 
 
@@ -87,11 +98,11 @@ evitando así que cualquier usuario pueda borrarlo todo.
 
 ### UsuarioController ("/usuarios")
 
-- PostMapping -> "/register" : Permite a cualquier usuario sin autorizar acceder y registrarse, deverá tener bien los datos 
+- PostMapping -> "/register" : Permite a cualquier usuario sin autorizar acceder y registrarse, deberá tener bien los datos 
 antes de registrarse y podrá entrar a los demás endpoints con esa autorización.
-  - Si el usuario ya existe saltará un error con el códgio 400
-  - Si los campos importantes del usuario están mal saltará el codigo 400
-  - Si todo está bien saltará el codigo 201
+  - Si el usuario ya existe saltará un error con el código 400
+  - Si los campos importantes del usuario están mal saltará el código 400
+  - Si todo está bien saltará el código 201
 
 
 - PostMapping -> "/login" : El login permite a los usuarios guardados en la base de datos autorizarse con sus credenciales
@@ -106,7 +117,7 @@ usuario registrado.
   - Si no saldrá el código 200
 
 
-### HistoriaController ("/historial")
+### HistorialController ("/historial")
 
 - GetMapping -> "/mostrar/{nombre}" : Muestra el historial de las búsquedas realizadas por el usuario que está autorizado.
   - Si el usuario no existe saldrá un 400.
@@ -114,7 +125,7 @@ usuario registrado.
   - Si todo va bien saldrá un 200.
 
 
-- GetMapping -> "/fecha/{fecha}" : Permite buscar por fecha los historiales de busquedas que ha realizado el usuario la 
+- GetMapping -> "/fecha/{fecha}" : Permite buscar por fecha los historiales de búsquedas que ha realizado el usuario la 
 fecha indicada.
   - Si la fecha introducida es errónea saldrá un error 400.
   - Si el usuario no existe saldrá un error 400.
@@ -127,7 +138,7 @@ fecha indicada.
 
 
 - DeleteMapping -> "/eliminar/{id}" : Permite al usuario eliminar una búsqueda de su propio historial.
-  - Si el codigo es erróneo saldrá un 400.
+  - Si el código es erróneo saldrá un 400.
   - Si el historial al que quieres acceder no está en tus historiales saldrá un 400.
   - Si todo va bien saldrá un 200.
 
@@ -135,16 +146,16 @@ fecha indicada.
 ### FavoritosController ("/historial")
 
 - PostMapping -> "/agregar/{code}" : Permite al usuario agregar un alimento a favoritos para poder ver su información sin
-tener que buscar de nuevo su códgio.
-  - Si el codigo introducido es erróneo saldrá un 400.
+tener que buscar de nuevo su código.
+  - Si el código introducido es erróneo saldrá un 400.
   - Si no se agregará y dará un 200.
 
 
 - DeleteMapping -> "/eliminar/{code}" : Le permite al usuario eliminar alimentos de su lista de favoritos.
-  - Si el codigo introducido es erróneo saldrá un 400.
+  - Si el código introducido es erróneo saldrá un 400.
   - Si no se eliminará de la lista y dará un 200.
 
 
 - GetMapping -> "/mostrar" : Muestra la lista de favoritos del usuario que lo ha buscado.
-  - Si está vacia saldrá un 400
+  - Si está vacía saldrá un 400
   - Si no mostrará la lista y dará un 200

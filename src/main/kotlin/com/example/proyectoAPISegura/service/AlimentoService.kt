@@ -43,7 +43,7 @@ class AlimentoService {
     }
 
     fun insertAlimento(alimento: Alimento):Optional<Alimento> {
-        if (alimento.name.isBlank() && alimento.marca.isBlank() && alimento.labels.isBlank()) {
+        if (alimento.name.isBlank() || alimento.marca.isBlank() || alimento.labels.isBlank()) {
             throw BadRequestException("El nombre, la marca y las etiquetas no pueden estar vacías")
         }
 
@@ -61,7 +61,7 @@ class AlimentoService {
             throw BadRequestException("No existe este alimento")
         }
 
-        if (alimento.name.isBlank() && alimento.marca.isBlank() && alimento.labels.isBlank()) {
+        if (alimento.name.isBlank() || alimento.marca.isBlank() || alimento.labels.isBlank()) {
             throw BadRequestException("El nombre, la marca y las etiquetas no pueden estar vacías")
         }
 

@@ -60,9 +60,9 @@ class HistorialController {
 
         val idLong = id.toLongOrNull() ?: throw BadRequestException("El id del historial debe de ser un número")
 
-        val alimentos = historialService.delete(idLong, authentication)
+        historialService.delete(idLong, authentication)
 
-        return ResponseEntity(alimentos, HttpStatus.OK)
+        return ResponseEntity("Historial eliminado", HttpStatus.OK)
     }
 
 

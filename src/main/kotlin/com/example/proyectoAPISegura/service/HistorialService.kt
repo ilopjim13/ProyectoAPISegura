@@ -108,6 +108,8 @@ class HistorialService {
 
         val usuario = usuarioRepository.findByUsername(authentication.name)
 
+        if (usuario.get().historiales?.isEmpty() == true)  throw BadRequestException("No has buscado ningún alimento")
+
         usuario.get().historiales?.forEach { Hibernate.initialize(it.alimento) }
 
         return historialRepository.findTop5ByUsuarioOrderByFechaDesc(usuario.get()).map { it.alimento }

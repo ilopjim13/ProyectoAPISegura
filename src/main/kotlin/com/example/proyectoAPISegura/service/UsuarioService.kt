@@ -1,6 +1,7 @@
 package com.example.proyectoAPISegura.service
 
 import com.example.proyectoAPISegura.error.exception.BadRequestException
+import com.example.proyectoAPISegura.error.exception.NotFoundException
 import com.example.proyectoAPISegura.model.Usuario
 import com.example.proyectoAPISegura.repository.UsuarioRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -54,6 +55,10 @@ class UsuarioService: UserDetailsService {
 
     @Transactional
     fun delete(nombre: String, authentication: Authentication) {
+
+        val userBd = usuarioRepository.findByUsername(nombre)
+
+        if (userBd.isEmpty) throw NotFoundException("Este usuario no existe")
 
         if(!checkUserOrAdmin(authentication, nombre)) {
             throw BadRequestException("No tienes permisos para eliminar este usuario")
