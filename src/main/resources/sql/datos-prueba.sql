@@ -1,2 +1,2 @@
 INSERT INTO `usuarios`(`id`, `password`, `roles`, `username`) VALUES (1,'$2a$10$DBc2FPq.4XperQMRTGpYnufwdTFxFCJtRZj1zsX.7vFo9YVe9rCyW','USER','diego'), (2,'$2a$10$DBc2FPq.4XperQMRTGpYnufwdTFxFCJtRZj1zsX.7vFo9YVe9rCyW','ADMIN','pepe')
-INSERT INTO `alimentos`(`code`, `name`, `marca`, `labels`) VALUES (1,'Pan de molde','Schar','Sin gluten')
+INSERT INTO `alimentos`(`code`, `name`, `marca`, `labels`, `busqueda`) VALUES (1,'Pan de molde','Schar','Sin gluten',0), (2,'Pan2 de molde','Schar','Sin gluten',0), (3,'Pan3 de molde','Schar','Sin gluten',0) , (4,'Pan4 de molde','Schar','Sin gluten',0) , (5,'Pan5 de molde','Schar','Sin gluten',0) , (6,'Pan6 de molde','Schar','Sin gluten',0)

@@ -2,7 +2,6 @@ package com.example.proyectoAPISegura.service
 
 import com.example.proyectoAPISegura.error.exception.BadRequestException
 import com.example.proyectoAPISegura.model.Alimento
-import com.example.proyectoAPISegura.model.Historial
 import com.example.proyectoAPISegura.repository.AlimentoRepository
 import com.example.proyectoAPISegura.repository.HistorialRepository
 import com.example.proyectoAPISegura.repository.UsuarioRepository
@@ -17,6 +16,9 @@ class AlimentoService {
     private lateinit var usuarioRepository: UsuarioRepository
 
     @Autowired
+    private lateinit var historialService: HistorialService
+
+    @Autowired
     private lateinit var historialRepository: HistorialRepository
 
     @Autowired
@@ -29,8 +31,9 @@ class AlimentoService {
         val alimento = alimentoRepository.findById(code)
 
         if (!usuarioBd.isEmpty && !alimento.isEmpty) {
-            val historial = Historial(null, usuarioBd.get(), alimento.get(), Date())
-            historialRepository.save(historial)
+            historialService.agregarHistorial(alimento.get(), usuarioBd.get())
+            alimento.get().busqueda++
+            alimentoRepository.save(alimento.get())
         }
 
         return alimento
@@ -65,12 +68,50 @@ class AlimentoService {
         return alimentoBd
     }
 
-    fun deleteAlimento(code: Long) {
-        val alimentoBd = alimentoRepository.findById(code)
+    fun alimentoPopulares(authentication: Authentication):List<Alimento> {
 
-        if (alimentoBd.isEmpty) throw BadRequestException("No existe este alimento")
+        val alimentos = alimentoRepository.findAll()
 
-        alimentoRepository.deleteById(code)
+        val top5 = mutableListOf<Alimento>()
+
+        alimentos.sortByDescending { it.busqueda }
+
+        alimentos.forEachIndexed { index, alimento ->
+            if (index < 5) {
+                top5.add(alimento)
+            }
+        }
+
+
+        return top5
+
+    }
+
+    fun deleteAlimento(code: Long, authentication: Authentication) {
+        val usuarioBd = usuarioRepository.findByUsername(authentication.name)
+
+        if (usuarioBd.get().roles == "ADMIN") {
+            val alimentoBd = alimentoRepository.findById(code)
+
+            val historialBd = historialRepository.findAll()
+
+            val historialAlimento = historialBd.filter {
+                it.alimento == alimentoBd.get()
+            }
+
+            if (alimentoBd.isEmpty) throw BadRequestException("No existe este alimento")
+            if (historialAlimento.isNotEmpty()) {
+                historialAlimento.forEach { historial ->
+                    historial.alimento = null
+                    historialRepository.save(historial)
+                }
+
+            }
+            alimentoRepository.deleteById(code)
+
+        } else throw BadRequestException("No tienes permisos para eliminar un alimento")
+
+
     }
 
 }

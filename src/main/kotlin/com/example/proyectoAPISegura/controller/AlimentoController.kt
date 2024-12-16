@@ -37,6 +37,17 @@ class AlimentoController {
 
     }
 
+    @GetMapping("/top")
+    fun topAlimentos(
+        authentication: Authentication
+    ):ResponseEntity<Any>? {
+
+        val alimentos = alimentoService.alimentoPopulares(authentication)
+
+        return ResponseEntity(alimentos, HttpStatus.OK)
+
+    }
+
     @PostMapping("/insert")
     fun insertByCode(
         @RequestBody alimento:Alimento,
@@ -71,7 +82,7 @@ class AlimentoController {
     ):ResponseEntity<Any> {
         val codeOk = code.toLongOrNull() ?: throw BadRequestException("El codigo debe ser un número")
 
-        alimentoService.deleteAlimento(codeOk)
+        alimentoService.deleteAlimento(codeOk, authentication)
 
         return ResponseEntity("Alimento eliminado", HttpStatus.OK)
 

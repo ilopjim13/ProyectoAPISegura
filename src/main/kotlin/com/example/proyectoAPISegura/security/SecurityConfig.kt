@@ -40,9 +40,13 @@ class SecurityConfig {
                 .requestMatchers("/usuarios/login").permitAll()
                 .requestMatchers("/usuarios/register").permitAll()
                 .requestMatchers("/usuarios/delete").authenticated()
-                .requestMatchers("/usuarios//historiales").authenticated()
-                .requestMatchers("/alimentos/**").authenticated()
-                //.requestMatchers(HttpMethod.DELETE,"").hasRole("ADMIN")
+                .requestMatchers("/alimentos/delete").authenticated()
+                .requestMatchers("/alimentos/informacion").authenticated()
+                .requestMatchers("/alimentos/top").authenticated()
+                .requestMatchers("/alimentos/insert").authenticated()
+                .requestMatchers("/alimentos/actualizar").authenticated()
+                .requestMatchers("/historial/**").authenticated()
+                .requestMatchers("/favorito/**").authenticated()
                 .anyRequest().permitAll()
             }
             .oauth2ResourceServer {oauth2 -> oauth2.jwt(Customizer.withDefaults())}

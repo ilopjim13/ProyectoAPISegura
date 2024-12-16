@@ -1,6 +1,6 @@
 package com.example.proyectoAPISegura.model
 
-import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 
 @Entity
@@ -16,7 +16,9 @@ data class Alimento(
     var labels: String,
     @Column
     var imageUrl: String? = null,
+    @Column(nullable = false)
+    var busqueda: Int = 0,
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY,mappedBy = "alimento", orphanRemoval = false)
-    @JsonManagedReference
+    @JsonIgnore
     val historiales: List<Historial>? = null
 )
