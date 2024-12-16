@@ -23,12 +23,13 @@ class FavoritosController(
         return ResponseEntity.ok("Alimento agregado a favoritos")
     }
 
-    @DeleteMapping("/eliminar/{alimentoId}")
+    @DeleteMapping("/eliminar/{code}")
     fun quitarDeFavoritos(
-        @PathVariable alimentoId: Long,
+        @PathVariable code: String,
         authentication: Authentication
     ): ResponseEntity<String> {
-        favoritosService.deleteFav(alimentoId,authentication)
+        val codeLong = code.toLongOrNull() ?: throw BadRequestException("El codigo debe de ser un número")
+        favoritosService.deleteFav(codeLong,authentication)
         return ResponseEntity.ok("Alimento eliminado de favoritos")
     }
 

@@ -43,6 +43,10 @@ class FavoritosService{
     fun obtenerFav(username: String): MutableSet<Alimento>? {
         val usuario = usuarioRepository.findByUsername(username)
 
+        if (usuario.isEmpty) throw NotFoundException("No existe ese usuario")
+
+        if (usuario.get().favoritos.isNullOrEmpty()) throw BadRequestException("No has añadido nada a favoritos")
+
         return usuario.get().favoritos
     }
 }

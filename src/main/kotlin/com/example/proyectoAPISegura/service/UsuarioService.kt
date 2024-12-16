@@ -31,6 +31,9 @@ class UsuarioService: UserDetailsService {
     fun insertUsuario(newUsuario:Usuario):Usuario {
         val passEncoder = BCryptPasswordEncoder()
 
+        if (newUsuario.username.isNullOrBlank() || newUsuario.password.isNullOrBlank())
+            throw BadRequestException("Los campos del usuario son incorrectos")
+
         val listusuarios = usuarioRepository.findAll()
         val usuario = listusuarios.find { it.username == newUsuario.username }
         if (usuario != null) {

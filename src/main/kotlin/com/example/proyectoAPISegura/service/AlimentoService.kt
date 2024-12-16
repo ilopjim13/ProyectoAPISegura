@@ -1,6 +1,7 @@
 package com.example.proyectoAPISegura.service
 
 import com.example.proyectoAPISegura.error.exception.BadRequestException
+import com.example.proyectoAPISegura.error.exception.NotFoundException
 import com.example.proyectoAPISegura.model.Alimento
 import com.example.proyectoAPISegura.repository.AlimentoRepository
 import com.example.proyectoAPISegura.repository.HistorialRepository
@@ -30,6 +31,8 @@ class AlimentoService {
 
         val alimento = alimentoRepository.findById(code)
 
+        if (alimento.isEmpty) throw NotFoundException("El existe ningún alimento con ese códgio")
+
         if (!usuarioBd.isEmpty && !alimento.isEmpty) {
             historialService.agregarHistorial(alimento.get(), usuarioBd.get())
             alimento.get().busqueda++
@@ -58,6 +61,10 @@ class AlimentoService {
             throw BadRequestException("No existe este alimento")
         }
 
+        if (alimento.name.isBlank() && alimento.marca.isBlank() && alimento.labels.isBlank()) {
+            throw BadRequestException("El nombre, la marca y las etiquetas no pueden estar vacías")
+        }
+
         alimentoBd.get().name = alimento.name
         alimentoBd.get().marca = alimento.marca
         alimentoBd.get().labels = alimento.labels
@@ -77,11 +84,12 @@ class AlimentoService {
         alimentos.sortByDescending { it.busqueda }
 
         alimentos.forEachIndexed { index, alimento ->
-            if (index < 5) {
+            if (index < 5 && alimento.busqueda > 0) {
                 top5.add(alimento)
             }
         }
 
+        if (top5.isEmpty()) throw BadRequestException("No se ha buscado ningún alimento")
 
         return top5
 
@@ -99,7 +107,7 @@ class AlimentoService {
                 it.alimento == alimentoBd.get()
             }
 
-            if (alimentoBd.isEmpty) throw BadRequestException("No existe este alimento")
+            if (alimentoBd.isEmpty) throw NotFoundException("No existe este alimento")
             if (historialAlimento.isNotEmpty()) {
                 historialAlimento.forEach { historial ->
                     historial.alimento = null
